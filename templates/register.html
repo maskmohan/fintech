@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Register</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/wallet">Wallet Operations</a></li>
+            <li><a href="/admin">Admin Dashboard</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <form id="registerForm">
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="phone_number" placeholder="Phone Number" required>
+            <button type="submit">Register</button>
+        </form>
+        <div id="registerResult" class="result"></div>
+    </div>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone_number = document.getElementById('phone_number').value;
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone_number })
+            });
+            const result = await response.json();
+            document.getElementById('registerResult').innerText = `Wallet ID: ${result.wallet_id}, Balance: ${result.balance}`;
+        });
+    </script>
+</body>
+</html>

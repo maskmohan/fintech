@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/register">Register</a></li>
+            <li><a href="/wallet">Wallet Operations</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h2>All Wallets</h2>
+        <button onclick="fetchAllWallets()">View All Wallets</button>
+        <div id="walletsResult" class="result"></div>
+
+        <h2>All Transactions</h2>
+        <button onclick="fetchAllTransactions()">View All Transactions</button>
+        <div id="transactionsResult" class="result"></div>
+    </div>
+
+    <script>
+        async function fetchAllWallets() {
+            const response = await fetch('/api/admin/wallets');
+            const wallets = await response.json();
+            document.getElementById('walletsResult').innerText = JSON.stringify(wallets, null, 2);
+        }
+
+        async function fetchAllTransactions() {
+            const response = await fetch('/api/admin/transactions');
+            const transactions = await response.json();
+            document.getElementById('transactionsResult').innerText = JSON.stringify(transactions, null, 2);
+        }
+    </script>
+</body>
+</html>

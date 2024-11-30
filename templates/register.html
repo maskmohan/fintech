@@ -19,9 +19,10 @@
     </nav>
     <div class="container">
         <form id="registerForm">
-            <input type="text" id="name" placeholder="Name" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="text" id="phone_number" placeholder="Phone Number" required>
+            <input type="text" id="name" placeholder="Name" required minlength="1" maxlength="100">
+            <input type="email" id="email" placeholder="Email" required maxlength="100">
+            <input type="text" id="phone_number" placeholder="Phone Number" required minlength="10" maxlength="15">
+            <input type="password" id="password" placeholder="Password" required minlength="6">
             <button type="submit">Register</button>
         </form>
         <div id="registerResult" class="result"></div>
@@ -32,13 +33,25 @@
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const phone_number = document.getElementById('phone_number').value;
+            const password = document.getElementById('password').value;
+
+            // Client-side validation
+            if (!name || !email || !phone_number || !password) {
+                document.getElementById('registerResult').innerText = 'All fields are required.';
+                return;
+            }
+
             const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, phone_number })
+                body: JSON.stringify({ name, email, phone_number, password })
             });
             const result = await response.json();
-            document.getElementById('registerResult').innerText = `Wallet ID: ${result.wallet_id}, Balance: ${result.balance}`;
+            if (response.ok) {
+                document.getElementById('registerResult').innerText = `Wallet ID: ${result.wallet_id}, Balance: ${result.balance}`;
+            } else {
+                document.getElementById('registerResult').innerText = `Error: ${JSON.stringify(result)}`;
+            }
         });
     </script>
 </body>

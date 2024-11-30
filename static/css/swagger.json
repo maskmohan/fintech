@@ -1,0 +1,236 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Fintech Wallet API",
+    "description": "API documentation for the Fintech Wallet System",
+    "version": "1.0.0"
+  },
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "paths": {
+    "/api/register": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "Register a new user with name, email, phone number, and password",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User registered successfully",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "summary": "Login a user",
+        "description": "Login a user with email and password",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/wallet/add-money": {
+      "post": {
+        "summary": "Add money to wallet",
+        "description": "Add money to the user's wallet",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddMoney"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Money added successfully",
+            "schema": {
+              "$ref": "#/definitions/BalanceResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Wallet not found"
+          }
+        }
+      }
+    },
+    "/api/wallet/{wallet_id}/balance": {
+      "get": {
+        "summary": "Check wallet balance",
+        "description": "Check the balance of the user's wallet",
+        "parameters": [
+          {
+            "name": "wallet_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Balance retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/BalanceResponse"
+            }
+          },
+          "404": {
+            "description": "Wallet not found"
+          }
+        }
+      }
+    },
+    "/api/wallet/{wallet_id}/transactions": {
+      "get": {
+        "summary": "Get transaction history",
+        "description": "Get the transaction history of the user's wallet",
+        "parameters": [
+          {
+            "name": "wallet_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction history retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/TransactionHistoryResponse"
+            }
+          },
+          "404": {
+            "description": "Wallet not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone_number": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "UserResponse": {
+      "type": "object",
+      "properties": {
+        "wallet_id": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "number"
+        }
+      }
+    },
+    "Login": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        }
+      }
+    },
+    "AddMoney": {
+      "type": "object",
+      "properties": {
+        "wallet_id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string"
+        }
+      }
+    },
+    "BalanceResponse": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "number"
+        }
+      }
+    },
+    "TransactionHistoryResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "transaction_type": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

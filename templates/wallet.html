@@ -21,7 +21,7 @@
         <h2>Add Money</h2>
         <form id="addMoneyForm">
             <input type="text" id="wallet_id" placeholder="Wallet ID" required>
-            <input type="number" id="amount" placeholder="Amount" required>
+            <input type="number" id="amount" placeholder="Amount" required min="1">
             <button type="submit">Add Money</button>
         </form>
         <div id="addMoneyResult" class="result"></div>
@@ -45,30 +45,93 @@
             e.preventDefault();
             const wallet_id = document.getElementById('wallet_id').value;
             const amount = document.getElementById('amount').value;
-            const response = await fetch('/api/wallet/add-money', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ wallet_id, amount })
-            });
-            const result = await response.json();
-            document.getElementById('addMoneyResult').innerText = `New Balance: ${result.balance}`;
+            const token = localStorage.getItem('token');
+
+            // Basic client-side validation
+            if (!validateWalletID(wallet_id)) {
+                document.getElementById('addMoneyResult').innerText = 'Invalid Wallet ID format.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/wallet/add-money', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ wallet_id, amount })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('addMoneyResult').innerText = `New Balance: ${result.balance}`;
+                } else {
+                    document.getElementById('addMoneyResult').innerText = result.error || 'Failed to add money. Please try again.';
+                }
+            } catch (error) {
+                document.getElementById('addMoneyResult').innerText = 'An error occurred. Please try again later.';
+            }
         });
 
         document.getElementById('checkBalanceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const wallet_id = document.getElementById('check_wallet_id').value;
-            const response = await fetch(`/api/wallet/${wallet_id}/balance`);
-            const result = await response.json();
-            document.getElementById('balanceResult').innerText = `Balance: ${result.balance}`;
+            const token = localStorage.getItem('token');
+
+            // Basic client-side validation
+            if (!validateWalletID(wallet_id)) {
+                document.getElementById('balanceResult').innerText = 'Invalid Wallet ID format.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/wallet/${wallet_id}/balance`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('balanceResult').innerText = `Balance: ${result.balance}`;
+                } else {
+                    document.getElementById('balanceResult').innerText = result.error || 'Failed to retrieve balance. Please try again.';
+                }
+            } catch (error) {
+                document.getElementById('balanceResult').innerText = 'An error occurred. Please try again later.';
+            }
         });
 
         document.getElementById('transactionHistoryForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const wallet_id = document.getElementById('history_wallet_id').value;
-            const response = await fetch(`/api/wallet/${wallet_id}/transactions`);
-            const result = await response.json();
-            document.getElementById('transactionHistoryResult').innerText = JSON.stringify(result, null, 2);
+            const token = localStorage.getItem('token');
+
+            // Basic client-side validation
+            if (!validateWalletID(wallet_id)) {
+                document.getElementById('transactionHistoryResult').innerText = 'Invalid Wallet ID format.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/wallet/${wallet_id}/transactions`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('transactionHistoryResult').innerText = JSON.stringify(result, null, 2);
+                } else {
+                    document.getElementById('transactionHistoryResult').innerText = result.error || 'Failed to retrieve transaction history. Please try again.';
+                }
+            } catch (error) {
+                document.getElementById('transactionHistoryResult').innerText = 'An error occurred. Please try again later.';
+            }
         });
+
+        function validateWalletID(wallet_id) {
+            const re = /^[a-zA-Z0-9_-]{6,20}$/;
+            return re.test(wallet_id);
+        }
     </script>
 </body>
 </html>

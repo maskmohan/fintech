@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,15 +29,123 @@
 
     <script>
         async function fetchAllWallets() {
-            const response = await fetch('/api/admin/wallets');
-            const wallets = await response.json();
-            document.getElementById('walletsResult').innerText = JSON.stringify(wallets, null, 2);
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch('/api/admin/wallets', {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch wallets');
+                }
+
+                const wallets = await response.json();
+                document.getElementById('walletsResult').innerText = JSON.stringify(wallets, null, 2);
+            } catch (error) {
+                document.getElementById('walletsResult').innerText = error.message || 'An error occurred. Please try again later.';
+            }
         }
 
         async function fetchAllTransactions() {
-            const response = await fetch('/api/admin/transactions');
-            const transactions = await response.json();
-            document.getElementById('transactionsResult').innerText = JSON.stringify(transactions, null, 2);
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch('/api/admin/transactions', {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch transactions');
+                }
+
+                const transactions = await response.json();
+                document.getElementById('transactionsResult').innerText = JSON.stringify(transactions, null, 2);
+            } catch (error) {
+                document.getElementById('transactionsResult').innerText = error.message || 'An error occurred. Please try again later.';
+            }
+        }
+    </script>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/register">Register</a></li>
+            <li><a href="/wallet">Wallet Operations</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h2>All Wallets</h2>
+        <button onclick="fetchAllWallets(1)">View All Wallets</button>
+        <div id="walletsResult" class="result"></div>
+        <div id="walletsPagination" class="pagination"></div>
+
+        <h2>All Transactions</h2>
+        <button onclick="fetchAllTransactions(1)">View All Transactions</button>
+        <div id="transactionsResult" class="result"></div>
+        <div id="transactionsPagination" class="pagination"></div>
+    </div>
+
+    <script>
+        async function fetchAllWallets(page) {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/api/admin/wallets?page=${page}&per_page=10`, {
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const result = await response.json();
+            document.getElementById('walletsResult').innerText = JSON.stringify(result.users, null, 2);
+            updatePagination('walletsPagination', result.pages, result.current_page, fetchAllWallets);
+        }
+
+        async function fetchAllTransactions(page) {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/api/admin/transactions?page=${page}&per_page=10`, {
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const result = await response.json();
+            document.getElementById('transactionsResult').innerText = JSON.stringify(result.transactions, null, 2);
+            updatePagination('transactionsPagination', result.pages, result.current_page, fetchAllTransactions);
+        }
+
+        function updatePagination(containerId, totalPages, currentPage, fetchFunction) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.innerText = i;
+                button.disabled = i === currentPage;
+                button.onclick = () => fetchFunction(i);
+                container.appendChild(button);
+            }
         }
     </script>
 </body>

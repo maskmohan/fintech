@@ -8,7 +8,7 @@ Welcome to the Fintech Wallet System! This project is a simple and secure wallet
 - **User Login**: Authenticate users and provide JWT tokens for secure access.
 - **Wallet Operations**: Add money, check balance, and view transaction history.
 - **Admin Dashboard**: View all wallets and transactions with pagination support.
-- **API Documentation**: Interactive API documentation using Swagger.
+- **API Documentation**: Interactive API documentation using Swagger..
 
 ## Getting Started
 
